@@ -1,7 +1,7 @@
 
 "use client"
 
-import *িয়াল from "react"
+import * as React from "react"
 import NextLink from 'next/link';
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
@@ -540,7 +540,6 @@ interface SidebarMenuButtonProps extends VariantProps<typeof sidebarMenuButtonVa
   tooltip?: string | Omit<React.ComponentProps<typeof TooltipContent>, 'children' | 'hidden' | 'side' | 'align'>;
   href?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
-  [key: string]: any;
 }
 
 export const SidebarMenuButton = React.forwardRef<
@@ -574,7 +573,7 @@ export const SidebarMenuButton = React.forwardRef<
         ref={ref as React.Ref<HTMLAnchorElement>}
         className={commonClass}
         {...commonDataProps}
-        {...rest}
+        {...rest} // Spread remaining props here
       >
         {children}
       </NextLink>
@@ -587,7 +586,7 @@ export const SidebarMenuButton = React.forwardRef<
         ref={ref as React.Ref<HTMLButtonElement>}
         className={commonClass}
         {...commonDataProps}
-        {...rest}
+        {...rest} // Spread remaining props here
       >
         {children}
       </button>
@@ -757,3 +756,4 @@ export const SidebarMenuSubButton = React.forwardRef<
   )
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
+
