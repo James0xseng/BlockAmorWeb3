@@ -2,10 +2,11 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, ArrowRight, BarChartHorizontalBig, CheckCircle2, SearchCode, ShieldCheck } from "lucide-react";
+import { AlertTriangle, ArrowRight, CheckCircle2, SearchCode, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import type { ChartConfig } from "@/components/ui/chart"
-import DashboardVulnerabilityChart from "@/components/dashboard/DashboardVulnerabilityChart";
+import DynamicDashboardChartLoader from "@/components/dashboard/DynamicDashboardChartLoader";
+
 
 const chartData = [
   { month: "January", desktop: 186, mobile: 80 },
@@ -86,7 +87,7 @@ export default function DashboardPage() {
             <CardDescription>Vulnerabilities found in the last 6 months.</CardDescription>
           </CardHeader>
           <CardContent>
-            <DashboardVulnerabilityChart data={chartData} config={chartConfig} />
+            <DynamicDashboardChartLoader data={chartData} config={chartConfig} />
           </CardContent>
         </Card>
         
