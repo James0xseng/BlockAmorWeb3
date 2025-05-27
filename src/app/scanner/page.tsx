@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/button";
@@ -5,10 +6,12 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { vulnerabilityScan, VulnerabilityScanOutput } from "@/ai/flows/vulnerability-scan";
-import { Loader2, SearchCode, CheckCircle, AlertCircle, Info, ShieldAlert, ListChecks, Wrench, Gauge } from "lucide-react";
+import { vulnerabilityScan, VulnerabilityScanOutput, VulnerabilityScanInput } from "@/ai/flows/vulnerability-scan";
+import { Loader2, SearchCode, CheckCircle, AlertCircle, Info, ShieldAlert, ListChecks, Wrench, Gauge, Gem } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 export default function ScannerPage() {
   const [contractCode, setContractCode] = useState("");
@@ -16,6 +19,7 @@ export default function ScannerPage() {
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
   const { toast } = useToast();
+  const [userTier, setUserTier] = useState<VulnerabilityScanInput['userTier']>('free');
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,11 +32,11 @@ export default function ScannerPage() {
 
     startTransition(async () => {
       try {
-        const result = await vulnerabilityScan({ smartContractCode: contractCode });
+        const result = await vulnerabilityScan({ smartContractCode: contractCode, userTier });
         setScanResult(result);
         toast({
           title: "Scan Complete",
-          description: "Vulnerability scan finished successfully.",
+          description: `Vulnerability scan finished successfully (Tier: ${result.tierApplied || userTier}).`,
           variant: "default",
         });
       } catch (e) {
@@ -57,11 +61,25 @@ export default function ScannerPage() {
             Smart Contract Vulnerability Scanner
           </CardTitle>
           <CardDescription>
-            Enter your smart contract code (e.g., Solidity) below. Our AI will analyze it for common vulnerabilities and provide suggestions.
+            Enter your smart contract code (e.g., Solidity) below. Our AI will analyze it for common vulnerabilities and provide suggestions. Higher tiers provide more detailed analysis.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
+            <div>
+              <Label htmlFor="userTier" className="font-medium">Simulated User Tier</Label>
+              <Select value={userTier} onValueChange={(value: VulnerabilityScanInput['userTier']) => setUserTier(value)}>
+                <SelectTrigger id="userTier" className="w-full md:w-[240px] mt-1">
+                  <SelectValue placeholder="Select Tier" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="free">Free Tier (Standard Analysis)</SelectItem>
+                  <SelectItem value="pro">Pro Tier (Detailed Analysis)</SelectItem>
+                  <SelectItem value="enterprise">Enterprise Tier (In-depth Analysis)</SelectItem>
+                </SelectContent>
+              </Select>
+              <p className="text-xs text-muted-foreground mt-1">Select a tier to see how the analysis detail changes. This is for demonstration.</p>
+            </div>
             <div>
               <Label htmlFor="contractCode" className="text-lg font-medium">Contract Code</Label>
               <Textarea
@@ -92,7 +110,7 @@ export default function ScannerPage() {
               ) : (
                 <>
                   <SearchCode className="mr-2 h-5 w-5" />
-                  Scan Contract
+                  Scan Contract ({userTier ? userTier.charAt(0).toUpperCase() + userTier.slice(1) : 'Free'})
                 </>
               )}
             </Button>
@@ -103,10 +121,19 @@ export default function ScannerPage() {
       {scanResult && (
         <Card className="shadow-lg">
           <CardHeader>
-            <CardTitle className="text-2xl flex items-center">
-              <ShieldAlert className="mr-3 h-7 w-7 text-primary" />
-              Scan Results
-            </CardTitle>
+            <div className="flex justify-between items-start">
+              <CardTitle className="text-2xl flex items-center">
+                <ShieldAlert className="mr-3 h-7 w-7 text-primary" />
+                Scan Results
+              </CardTitle>
+              {scanResult.tierApplied && (
+                <Badge variant={scanResult.tierApplied === 'pro' || scanResult.tierApplied === 'enterprise' ? 'default' : 'secondary'} className="capitalize">
+                  {scanResult.tierApplied === 'pro' && <Gem className="mr-1.5 h-3.5 w-3.5" />}
+                  {scanResult.tierApplied === 'enterprise' && <Gem className="mr-1.5 h-3.5 w-3.5 text-amber-400" />}
+                  {scanResult.tierApplied} Tier Analysis
+                </Badge>
+              )}
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">

@@ -31,6 +31,7 @@ function initializeSchema(db: Database.Database) {
       displayName TEXT NOT NULL,
       email TEXT UNIQUE NOT NULL,
       hashedPassword TEXT NOT NULL,
+      tier TEXT NOT NULL DEFAULT 'free', -- Added tier column
       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP
     );
   `;
@@ -43,6 +44,7 @@ function initializeSchema(db: Database.Database) {
   //     id INTEGER PRIMARY KEY AUTOINCREMENT,
   //     userId INTEGER NOT NULL,
   //     name TEXT NOT NULL,
+  //     tier TEXT NOT NULL DEFAULT 'free',
   //     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
   //     FOREIGN KEY (userId) REFERENCES users (id)
   //   );

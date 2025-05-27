@@ -48,6 +48,7 @@ export async function registerUser(
   }
 
   const { displayName, email, password } = validatedFields.data;
+  const defaultTier = 'free'; // Set default tier for new users
 
   try {
     const db = getDb();
@@ -65,12 +66,12 @@ export async function registerUser(
 
     // Insert new user
     const insertStmt = db.prepare(
-      'INSERT INTO users (displayName, email, hashedPassword) VALUES (?, ?, ?)'
+      'INSERT INTO users (displayName, email, hashedPassword, tier) VALUES (?, ?, ?, ?)'
     );
-    const info = insertStmt.run(displayName, email, hashedPassword);
+    const info = insertStmt.run(displayName, email, hashedPassword, defaultTier);
 
     if (info.changes > 0) {
-      return { message: `Welcome, ${displayName}! Your account has been created. You can now try to log in (login functionality not yet implemented).`, success: true };
+      return { message: `Welcome, ${displayName}! Your account has been created with a '${defaultTier}' tier. You can now try to log in (login functionality not yet implemented).`, success: true };
     } else {
       return { error: 'Failed to create account. Please try again.', success: false };
     }
