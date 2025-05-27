@@ -1,3 +1,7 @@
+
+"use client";
+
+import * as React from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +11,10 @@ import { Separator } from "@/components/ui/separator";
 import { Settings, UserCircle, Bell, Shield } from "lucide-react";
 
 export default function SettingsPage() {
+  const [emailNotifications, setEmailNotifications] = React.useState(true);
+  const [criticalAlertsOnly, setCriticalAlertsOnly] = React.useState(false);
+  const [displayName, setDisplayName] = React.useState("Demo User");
+
   return (
     <div className="space-y-8 max-w-3xl mx-auto">
       <Card className="shadow-lg">
@@ -25,13 +33,17 @@ export default function SettingsPage() {
             <h3 className="text-xl font-semibold flex items-center"><UserCircle className="mr-2 h-6 w-6 text-muted-foreground"/>Profile</h3>
             <div className="space-y-2">
               <Label htmlFor="displayName">Display Name</Label>
-              <Input id="displayName" defaultValue="Demo User" />
+              <Input 
+                id="displayName" 
+                value={displayName} 
+                onChange={(e) => setDisplayName(e.target.value)} 
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email Address</Label>
               <Input id="email" type="email" defaultValue="user@example.com" disabled />
             </div>
-            <Button>Update Profile</Button>
+            <Button onClick={() => console.log("Profile update clicked. Name:", displayName)}>Update Profile</Button>
           </section>
 
           <Separator />
@@ -46,7 +58,11 @@ export default function SettingsPage() {
                   Receive important alerts and updates via email.
                 </span>
               </Label>
-              <Switch id="emailNotifications" defaultChecked />
+              <Switch 
+                id="emailNotifications" 
+                checked={emailNotifications}
+                onCheckedChange={setEmailNotifications}
+              />
             </div>
             <div className="flex items-center justify-between space-x-2 p-3 rounded-md border">
               <Label htmlFor="criticalAlerts" className="flex flex-col space-y-1">
@@ -55,7 +71,12 @@ export default function SettingsPage() {
                   Only notify for critical severity security events.
                 </span>
               </Label>
-              <Switch id="criticalAlerts" />
+              <Switch 
+                id="criticalAlerts" 
+                checked={criticalAlertsOnly}
+                onCheckedChange={setCriticalAlertsOnly}
+                disabled={!emailNotifications} // Example: disable if email notifications are off
+              />
             </div>
           </section>
           
@@ -71,13 +92,13 @@ export default function SettingsPage() {
                   Enhance your account security.
                 </span>
               </Label>
-              <Button variant="outline" size="sm">Enable 2FA</Button>
+              <Button variant="outline" size="sm" onClick={() => console.log("Enable 2FA clicked")}>Enable 2FA</Button>
             </div>
              <div className="space-y-2">
               <Label htmlFor="apiToken">API Token</Label>
               <div className="flex items-center gap-2">
                 <Input id="apiToken" type="password" defaultValue="************" disabled />
-                <Button variant="secondary">Regenerate</Button>
+                <Button variant="secondary" onClick={() => console.log("Regenerate API token clicked")}>Regenerate</Button>
               </div>
             </div>
           </section>
