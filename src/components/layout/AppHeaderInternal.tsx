@@ -1,7 +1,7 @@
 
 "use client";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { Shield } from "lucide-react";
+import { Shield, LogIn } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
@@ -23,8 +23,12 @@ export default function AppHeaderInternal() {
       </div>
       <div className="ml-auto flex items-center gap-2">
         <ThemeToggle />
-        {/* Placeholder for User Profile / Actions, e.g., Connect Wallet button */}
-        {/* <Button variant="outline">Connect Wallet</Button> */}
+        <Button variant="outline" asChild>
+          <Link href="/login">
+            <LogIn className="mr-2 h-4 w-4" />
+            Login
+          </Link>
+        </Button>
       </div>
     </header>
   );

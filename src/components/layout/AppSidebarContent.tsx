@@ -1,7 +1,6 @@
 
 "use client";
-import Link from "next/link"; // Keep NextLink import if SidebarMenuButton doesn't import it internally, but it does now.
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation"; // Added useRouter
 import {
   SidebarHeader,
   SidebarContent,
@@ -9,7 +8,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-} from "@/components/ui/sidebar"; // SidebarMenuButton is imported from here
+} from "@/components/ui/sidebar"; 
 import {
   Shield,
   LayoutDashboard,
@@ -24,8 +23,8 @@ import {
   LifeBuoy,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-// Separator is not used here anymore, can be removed if not needed by other parts of this file
-// import { Separator } from "@/components/ui/separator"; 
+import Link from "next/link"; // Keep for the header link
+
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -45,6 +44,7 @@ const bottomNavItems = [
 
 export default function AppSidebarContent() {
   const pathname = usePathname();
+  const router = useRouter(); // Initialize router
 
   return (
     <>
@@ -99,8 +99,8 @@ export default function AppSidebarContent() {
            <SidebarMenuItem>
                 <SidebarMenuButton
                   onClick={() => {
-                    // Placeholder for logout logic
-                    console.log("Log Out Clicked");
+                    console.log("Log Out Clicked - redirecting to /login");
+                    router.push('/login'); // Redirect to login page
                   }}
                   className="justify-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   tooltip={{children: "Log Out", className: "text-xs"}}
