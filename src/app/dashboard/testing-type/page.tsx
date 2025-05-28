@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { contractTypeTest, type ContractTypeTestOutput } from "@/ai/flows/contract-type-test-flow";
-import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb, ShieldAlert, ShieldCheck } from "lucide-react";
+import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb, ShieldAlert, ShieldCheck, Microscope } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -85,6 +85,16 @@ const defenseStrategies = [
     strategy: "Fuzz Entry Constraints",
     description: "Use assumptions in fuzz/unit tests to prevent false positives.",
   },
+];
+
+const testTypesByFocus = [
+  { focus: "Access Bypass", types: "Unit, Access Control, Replay, ZK Testing" },
+  { focus: "Gas Bombs", types: "Gas Testing, Fallback, Loop Simulation" },
+  { focus: "Race Conditions", types: "Race Testing, Fuzzing, Concurrency" },
+  { focus: "Fallback Abuse", types: "Fallback, Entropy Drift, Selector Mutation" },
+  { focus: "Zero-Day", types: "Replay, Mutation, Fork Testing, Snapshot" },
+  { focus: "Zombie Selectors", types: "Mutation, Drift Replay, Entropy Analysis" },
+  { focus: "Timelocks", types: "Block.time tests, Snapshot, Rewind Tests" },
 ];
 
 
@@ -234,6 +244,38 @@ export default function TestingTypePage() {
                   <TableRow key={strategy.strategy}>
                     <TableCell className="font-medium">{strategy.strategy}</TableCell>
                     <TableCell>{strategy.description}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <Accordion type="single" collapsible className="w-full shadow-md rounded-lg border bg-card text-card-foreground">
+        <AccordionItem value="test-types-by-focus">
+          <AccordionTrigger className="px-6 py-4 text-xl hover:no-underline">
+            <div className="flex items-center">
+              <Microscope className="mr-3 h-6 w-6 text-muted-foreground" />
+              Test Types by Focus Area
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-6">
+            <CardDescription className="mb-4">
+              Reference common test types based on the security focus area.
+            </CardDescription>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Focus Area</TableHead>
+                  <TableHead>Relevant Test Types</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {testTypesByFocus.map((item) => (
+                  <TableRow key={item.focus}>
+                    <TableCell className="font-medium">{item.focus}</TableCell>
+                    <TableCell>{item.types}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>
