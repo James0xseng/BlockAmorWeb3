@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useFormStatus } from "react-dom"; // Changed from react-dom for useFormState
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -48,7 +48,15 @@ export default function LoginPage() {
   const { toast } = useToast();
   // const router = useRouter(); // Uncomment if implementing redirect
   const initialState: LoginState = { message: null, error: null, success: false, redirectTo: null };
-  const [formState, formAction] = useFormState(loginUser, initialState);
+  // useActionState is imported from 'react-dom' for form actions, not 'react' directly for this hook.
+  // React.useActionState is the new name. It's typically imported from 'react-dom' or 'react' depending on the specific version/usage context with server actions.
+  // For Next.js App Router with Server Actions, `useFormState` from `react-dom` is typical.
+  // However, the error message suggests React.useActionState.
+  // Let's try importing from 'react' as per common guidance for the hook itself if available.
+  // If not, 'react-dom' remains the source for useFormStatus.
+  // The error specifically said ReactDOM.useFormState was renamed, let's use React.useActionState.
+  // The standard import for useActionState is from 'react'.
+  const [formState, formAction] = useActionState(loginUser, initialState);
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

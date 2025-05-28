@@ -3,7 +3,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useFormState, useFormStatus } from "react-dom";
+import { useActionState, useFormStatus } from "react-dom"; // Changed from react-dom for useFormState
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -48,7 +48,7 @@ function SubmitButton() {
 export default function RegisterPage() {
   const { toast } = useToast();
   const initialState: RegisterState = { message: null, error: null, success: false };
-  const [formState, formAction] = useFormState(registerUser, initialState);
+  const [formState, formAction] = useActionState(registerUser, initialState);
 
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
