@@ -7,9 +7,52 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { contractTypeTest, type ContractTypeTestOutput } from "@/ai/flows/contract-type-test-flow";
-import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb } from "lucide-react";
+import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb, ShieldAlert } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
+
+const testingPitfalls = [
+  {
+    attackType: "Test Injection",
+    description: "Modify or recompile contract with hidden logic to pass tests.",
+  },
+  {
+    attackType: "Role Misconfiguration",
+    description: "Bypass test assumptions by impersonating authorized roles (e.g., via `vm.prank`).",
+  },
+  {
+    attackType: "Hidden State Drift",
+    description: "State is manipulated outside the function being tested.",
+  },
+  {
+    attackType: "False Positive Test Logic",
+    description: "Unit test always passes due to poor assertion logic.",
+  },
+  {
+    attackType: "Missing Negative Cases",
+    description: "No coverage for invalid inputs, allowing security bypass.",
+  },
+  {
+    attackType: "Function Mutation Drift",
+    description: "Function signature changes without corresponding test updates.",
+  },
+  {
+    attackType: "Selector Shadowing",
+    description: "Reuse of function names with different params to hide behavior.",
+  },
+  {
+    attackType: "Gas-Bomb Passes",
+    description: "Malicious logic increases gas usage without causing test failure.",
+  },
+];
 
 export default function TestingTypePage() {
   const [contractCode, setContractCode] = useState("");
@@ -58,7 +101,7 @@ export default function TestingTypePage() {
             Smart Contract Testing Analyzer
           </CardTitle>
           <CardDescription>
-            Enter any smart contract code. Our AI will attempt to identify its type, provide an overview, and suggest general testing approaches.
+            Enter any smart contract code. Our AI will attempt to identify its type, provide an overview, and suggest general testing approaches, keeping in mind common testing pitfalls (listed below).
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -99,6 +142,36 @@ export default function TestingTypePage() {
             </Button>
           </CardFooter>
         </form>
+      </Card>
+
+      <Card className="shadow-md">
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center">
+            <ShieldAlert className="mr-3 h-6 w-6 text-muted-foreground" />
+            Common Smart Contract Testing Pitfalls
+          </CardTitle>
+          <CardDescription>
+            Be mindful of these common issues when designing and writing your smart contract tests. The AI considers these when generating suggestions.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[200px]">Attack Type / Pitfall</TableHead>
+                <TableHead>Description</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {testingPitfalls.map((pitfall) => (
+                <TableRow key={pitfall.attackType}>
+                  <TableCell className="font-medium">{pitfall.attackType}</TableCell>
+                  <TableCell>{pitfall.description}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
       </Card>
 
       {analysisResult && (
