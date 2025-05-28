@@ -1,9 +1,9 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useActionState } from "react"; // Changed import for useActionState
 import Link from "next/link";
-import { useActionState, useFormStatus } from "react-dom"; // Changed from react-dom for useFormState
+import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { UserPlus, Loader2, AlertCircle, KeyRound, UserCircle2, LogIn, CheckCircle } from "lucide-react"; // Added CheckCircle
+import { UserPlus, Loader2, AlertCircle, KeyRound, UserCircle2, LogIn, CheckCircle } from "lucide-react"; 
 import { registerUser, type RegisterState } from "./actions";
 
 
@@ -48,6 +48,7 @@ function SubmitButton() {
 export default function RegisterPage() {
   const { toast } = useToast();
   const initialState: RegisterState = { message: null, error: null, success: false };
+  // useActionState is imported from 'react' for form actions with Server Actions.
   const [formState, formAction] = useActionState(registerUser, initialState);
 
   const [displayName, setDisplayName] = useState("");
