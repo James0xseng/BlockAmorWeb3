@@ -17,7 +17,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
 const testingPitfalls = [
   {
@@ -101,7 +107,7 @@ export default function TestingTypePage() {
             Smart Contract Testing Analyzer
           </CardTitle>
           <CardDescription>
-            Enter any smart contract code. Our AI will attempt to identify its type, provide an overview, and suggest general testing approaches, keeping in mind common testing pitfalls (listed below).
+            Enter any smart contract code. Our AI will attempt to identify its type, provide an overview, and suggest general testing approaches, keeping in mind common testing pitfalls.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -144,35 +150,38 @@ export default function TestingTypePage() {
         </form>
       </Card>
 
-      <Card className="shadow-md">
-        <CardHeader>
-          <CardTitle className="text-xl flex items-center">
-            <ShieldAlert className="mr-3 h-6 w-6 text-muted-foreground" />
-            Common Smart Contract Testing Pitfalls
-          </CardTitle>
-          <CardDescription>
-            Be mindful of these common issues when designing and writing your smart contract tests. The AI considers these when generating suggestions.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-[200px]">Attack Type / Pitfall</TableHead>
-                <TableHead>Description</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {testingPitfalls.map((pitfall) => (
-                <TableRow key={pitfall.attackType}>
-                  <TableCell className="font-medium">{pitfall.attackType}</TableCell>
-                  <TableCell>{pitfall.description}</TableCell>
+      <Accordion type="single" collapsible className="w-full shadow-md rounded-lg border bg-card text-card-foreground">
+        <AccordionItem value="testing-pitfalls">
+          <AccordionTrigger className="px-6 py-4 text-xl hover:no-underline">
+            <div className="flex items-center">
+              <ShieldAlert className="mr-3 h-6 w-6 text-muted-foreground" />
+              Common Smart Contract Testing Pitfalls
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-6">
+            <CardDescription className="mb-4">
+              Be mindful of these common issues when designing and writing your smart contract tests. The AI considers these when generating suggestions.
+            </CardDescription>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[200px]">Attack Type / Pitfall</TableHead>
+                  <TableHead>Description</TableHead>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+              </TableHeader>
+              <TableBody>
+                {testingPitfalls.map((pitfall) => (
+                  <TableRow key={pitfall.attackType}>
+                    <TableCell className="font-medium">{pitfall.attackType}</TableCell>
+                    <TableCell>{pitfall.description}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
 
       {analysisResult && (
         <Card className="shadow-lg">
