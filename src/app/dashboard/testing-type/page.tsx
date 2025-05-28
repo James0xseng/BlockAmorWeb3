@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { contractTypeTest, type ContractTypeTestOutput } from "@/ai/flows/contract-type-test-flow";
-import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb, ShieldAlert, ShieldCheck, Microscope, BookOpen } from "lucide-react"; // Added BookOpen
+import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb, ShieldAlert, ShieldCheck, Microscope, BookOpen, ClipboardList } from "lucide-react"; // Added ClipboardList
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -24,6 +24,42 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+
+const testingTypesDetailed = [
+  { name: "Unit Testing", purpose: "Test isolated smart contract functions for expected inputs/outputs", labUse: "Validate that attack vectors (e.g. reentrancy) or defenses (e.g. reentrancy guards) behave correctly" },
+  { name: "Integration Testing", purpose: "Test interaction between multiple contracts or protocols", labUse: "Simulate attack chains that involve routers, token contracts, or oracles" },
+  { name: "Property-Based Testing", purpose: "Fuzz function inputs to explore edge cases", labUse: "Auto-discover Zero-Day vectors or entropy-sensitive drift (e.g., fallback abuse)" },
+  { name: "Fuzz Testing", purpose: "Randomized input mutation for entropy drift, selector collision, invalid calls", labUse: "Detect unexpected state changes, access control bypass, gas griefs, etc." },
+  { name: "Invariant Testing", purpose: "Assert that certain properties (e.g., total supply, locked funds) always hold", labUse: "Ensure that no exploit can break protocol invariants (e.g., locked funds stay locked)" },
+  { name: "Snapshot Testing", purpose: "Record state snapshots and compare post-action diffs", labUse: "Detect tampering or drift in storage across exploit execution" },
+  { name: "Regression Testing", purpose: "Catch reintroduced bugs or failed patches", labUse: "Lock in previous fixes for exploits; test old payloads vs. new defenses" },
+  { name: "Gas Testing", purpose: "Measure gas costs to detect gas bombs or inefficiencies", labUse: "Flag DoS-style attacks or defense inefficiencies via loop, fallback, or recursion" },
+  { name: "Replay Testing", purpose: "Replay real exploit calldata or test vector from chain logs", labUse: "Simulate real-world hacks to ensure defenses now mitigate them" },
+  { name: "Access Control Testing", purpose: "Ensure correct role/permission boundaries", labUse: "Prevent elevation attacks, ensure `onlyOwner`, `RBAC`, `BitGuard`, etc., are effective" },
+  { name: "Mutation Testing", purpose: "Modify function signatures, storage layout, or selector entropy to test robustness", labUse: "Simulates ABI drift, zombie selector exploits, and storage slot injection vulnerabilities" },
+  { name: "Time/Block Testing", purpose: "Manipulate block.timestamp or block.number", labUse: "Useful for attacks relying on timelocks, cooldowns, TWAP/TWAMM drift" },
+  { name: "Event-Based Testing", purpose: "Validate event emissions or detect missing logs", labUse: "Ensures traceability; detects event suppression or spoofing attacks" },
+  { name: "Fork Testing", purpose: "Fork a real chain state and simulate your exploit", labUse: "Attack contracts as they exist in production (e.g., Curve, Aave) with real balances" },
+  { name: "Chain Differential Testing", purpose: "Compare behavior across multiple chains/forks", labUse: "Detect behavior differences due to opcode changes, gas pricing, or storage limits" },
+  { name: "Oracle Testing", purpose: "Test how your contracts respond to price or data oracle manipulation", labUse: "Simulate fake prices, stale rounds, or oracle front-runs" },
+  { name: "ZK/MetaTx Testing", purpose: "Verify proof-based access, relayer security, and gasless call integrity", labUse: "Ensure signature replay protection, Semaphore access control, ZK-gated execution" },
+  { name: "Concurrency / Race Testing", purpose: "Test how the contract behaves with fast sequence/multi-call submissions", labUse: "Detect reentrancy, race conditions, frontruns, and router feedback loops" },
+  { name: "Fallback Testing", purpose: "Test undefined selectors, fallback logic, receive() attacks", labUse: "Validate fallback drift abuse, rogue calls, and gas griefs via low-level calls" },
+  { name: "Entropy Drift Testing", purpose: "Log and test changes in selector entropy or hash values across versions", labUse: "Detect replayable payloads or identifier collision (e.g. mutated function names)" },
+];
+
+const testCategories = [
+  { type: "Positive Tests", description: "Ensure functions behave correctly for valid inputs" },
+  { type: "Negative Tests", description: "Ensure errors are correctly thrown on invalid inputs" },
+  { type: "Boundary/Edge Tests", description: "Test upper/lower bounds (e.g., overflows, limits, time cutoffs)" },
+  { type: "Revert Expectation Tests", description: "Confirm function reverts on invalid access or logic violation" },
+  { type: "Permission Tests", description: "Validate only authorized roles/users can call a function" },
+  { type: "Gas-Use Assertion Tests", description: "Check that gas used remains under a defined limit" },
+  { type: "Storage/State Tests", description: "Ensure storage is updated correctly (e.g., after transfers/mints)" },
+  { type: "Event Emission Tests", description: "Confirm proper event logs are emitted during actions" },
+  { type: "Constructor Tests", description: "Verify initial values after deployment" },
+  { type: "Function Selector Tests", description: "Ensure correct dispatching of function selectors" },
+];
 
 const testingPitfalls = [
   {
@@ -95,29 +131,6 @@ const testTypesByFocus = [
   { focus: "Zero-Day", types: "Replay, Mutation, Fork Testing, Snapshot" },
   { focus: "Zombie Selectors", types: "Mutation, Drift Replay, Entropy Analysis" },
   { focus: "Timelocks", types: "Block.time tests, Snapshot, Rewind Tests" },
-];
-
-const testingTypesDetailed = [
-  { name: "Unit Testing", purpose: "Test isolated smart contract functions for expected inputs/outputs", labUse: "Validate that attack vectors (e.g. reentrancy) or defenses (e.g. reentrancy guards) behave correctly" },
-  { name: "Integration Testing", purpose: "Test interaction between multiple contracts or protocols", labUse: "Simulate attack chains that involve routers, token contracts, or oracles" },
-  { name: "Property-Based Testing", purpose: "Fuzz function inputs to explore edge cases", labUse: "Auto-discover Zero-Day vectors or entropy-sensitive drift (e.g., fallback abuse)" },
-  { name: "Fuzz Testing", purpose: "Randomized input mutation for entropy drift, selector collision, invalid calls", labUse: "Detect unexpected state changes, access control bypass, gas griefs, etc." },
-  { name: "Invariant Testing", purpose: "Assert that certain properties (e.g., total supply, locked funds) always hold", labUse: "Ensure that no exploit can break protocol invariants (e.g., locked funds stay locked)" },
-  { name: "Snapshot Testing", purpose: "Record state snapshots and compare post-action diffs", labUse: "Detect tampering or drift in storage across exploit execution" },
-  { name: "Regression Testing", purpose: "Catch reintroduced bugs or failed patches", labUse: "Lock in previous fixes for exploits; test old payloads vs. new defenses" },
-  { name: "Gas Testing", purpose: "Measure gas costs to detect gas bombs or inefficiencies", labUse: "Flag DoS-style attacks or defense inefficiencies via loop, fallback, or recursion" },
-  { name: "Replay Testing", purpose: "Replay real exploit calldata or test vector from chain logs", labUse: "Simulate real-world hacks to ensure defenses now mitigate them" },
-  { name: "Access Control Testing", purpose: "Ensure correct role/permission boundaries", labUse: "Prevent elevation attacks, ensure `onlyOwner`, `RBAC`, `BitGuard`, etc., are effective" },
-  { name: "Mutation Testing", purpose: "Modify function signatures, storage layout, or selector entropy to test robustness", labUse: "Simulates ABI drift, zombie selector exploits, and storage slot injection vulnerabilities" },
-  { name: "Time/Block Testing", purpose: "Manipulate block.timestamp or block.number", labUse: "Useful for attacks relying on timelocks, cooldowns, TWAP/TWAMM drift" },
-  { name: "Event-Based Testing", purpose: "Validate event emissions or detect missing logs", labUse: "Ensures traceability; detects event suppression or spoofing attacks" },
-  { name: "Fork Testing", purpose: "Fork a real chain state and simulate your exploit", labUse: "Attack contracts as they exist in production (e.g., Curve, Aave) with real balances" },
-  { name: "Chain Differential Testing", purpose: "Compare behavior across multiple chains/forks", labUse: "Detect behavior differences due to opcode changes, gas pricing, or storage limits" },
-  { name: "Oracle Testing", purpose: "Test how your contracts respond to price or data oracle manipulation", labUse: "Simulate fake prices, stale rounds, or oracle front-runs" },
-  { name: "ZK/MetaTx Testing", purpose: "Verify proof-based access, relayer security, and gasless call integrity", labUse: "Ensure signature replay protection, Semaphore access control, ZK-gated execution" },
-  { name: "Concurrency / Race Testing", purpose: "Test how the contract behaves with fast sequence/multi-call submissions", labUse: "Detect reentrancy, race conditions, frontruns, and router feedback loops" },
-  { name: "Fallback Testing", purpose: "Test undefined selectors, fallback logic, receive() attacks", labUse: "Validate fallback drift abuse, rogue calls, and gas griefs via low-level calls" },
-  { name: "Entropy Drift Testing", purpose: "Log and test changes in selector entropy or hash values across versions", labUse: "Detect replayable payloads or identifier collision (e.g. mutated function names)" },
 ];
 
 
@@ -243,6 +256,38 @@ export default function TestingTypePage() {
                 </TableBody>
               </Table>
             </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
+      <Accordion type="single" collapsible className="w-full shadow-md rounded-lg border bg-card text-card-foreground">
+        <AccordionItem value="test-categories">
+          <AccordionTrigger className="px-6 py-4 text-xl hover:no-underline">
+            <div className="flex items-center">
+              <ClipboardList className="mr-3 h-6 w-6 text-muted-foreground" />
+              Key Test Categories & Focus
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-6">
+            <CardDescription className="mb-4">
+              Common categories of tests and what they typically aim to verify.
+            </CardDescription>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[250px]">Test Category</TableHead>
+                  <TableHead>Description</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {testCategories.map((category) => (
+                  <TableRow key={category.type}>
+                    <TableCell className="font-medium">{category.type}</TableCell>
+                    <TableCell>{category.description}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </AccordionContent>
         </AccordionItem>
       </Accordion>
@@ -411,3 +456,4 @@ export default function TestingTypePage() {
     </div>
   );
 }
+
