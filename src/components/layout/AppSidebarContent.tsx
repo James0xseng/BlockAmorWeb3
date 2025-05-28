@@ -1,6 +1,6 @@
 
 "use client";
-import { usePathname, useRouter } from "next/navigation"; // Added useRouter
+import { usePathname, useRouter } from "next/navigation"; 
 import {
   SidebarHeader,
   SidebarContent,
@@ -21,13 +21,14 @@ import {
   Settings,
   LogOut,
   LifeBuoy,
+  FlaskConical, // Added FlaskConical for Testing Type
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import Link from "next/link"; // Keep for the header link
 
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/dashboard/testing-type", label: "Testing Type Analyzer", icon: FlaskConical }, // New item
   { href: "/scanner", label: "Vulnerability Scanner", icon: SearchCode },
   { href: "/simulator", label: "Transaction Simulator", icon: IterationCcw },
   { href: "/gas-estimator", label: "Gas Estimator", icon: Fuel },
@@ -44,15 +45,24 @@ const bottomNavItems = [
 
 export default function AppSidebarContent() {
   const pathname = usePathname();
-  const router = useRouter(); // Initialize router
+  const router = useRouter(); 
 
   return (
     <>
       <SidebarHeader className="p-4 border-b border-sidebar-border">
-        <Link href="/dashboard" className="flex items-center gap-2 text-lg font-semibold text-sidebar-primary group-data-[collapsible=icon]:justify-center">
-          <Shield className="h-7 w-7 shrink-0 text-primary" />
-          <span className="font-mono group-data-[collapsible=icon]:hidden">BlockArmor</span>
-        </Link>
+        {/* Updated NextLink to use SidebarMenuButton's href directly if needed, but keeping it simple */}
+        <SidebarMenuButton
+            href="/dashboard"
+            className={cn(
+                "text-lg font-semibold text-sidebar-primary group-data-[collapsible=icon]:justify-center !p-0 hover:!bg-transparent focus-visible:!ring-0",
+            )}
+            tooltip={{ children: "BlockArmor Dashboard", className: "text-xs" }}
+            variant="ghost" // Ensure it looks like a link/header
+            size="lg" // Adjust size if needed
+            >
+            <Shield className="h-7 w-7 shrink-0 text-primary" />
+            <span className="font-mono group-data-[collapsible=icon]:hidden">BlockArmor</span>
+        </SidebarMenuButton>
       </SidebarHeader>
       <SidebarContent className="p-2">
         <SidebarMenu>
@@ -100,7 +110,7 @@ export default function AppSidebarContent() {
                 <SidebarMenuButton
                   onClick={() => {
                     console.log("Log Out Clicked - redirecting to /login");
-                    router.push('/login'); // Redirect to login page
+                    router.push('/login'); 
                   }}
                   className="justify-start hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                   tooltip={{children: "Log Out", className: "text-xs"}}
@@ -114,3 +124,4 @@ export default function AppSidebarContent() {
     </>
   );
 }
+
