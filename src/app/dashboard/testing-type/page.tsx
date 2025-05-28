@@ -7,7 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { contractTypeTest, type ContractTypeTestOutput } from "@/ai/flows/contract-type-test-flow";
-import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb, ShieldAlert } from "lucide-react";
+import { Loader2, FlaskConical, CheckCircle, AlertCircle, Info, TestTubeDiagonal, ListTree, FileText, Lightbulb, ShieldAlert, ShieldCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -60,6 +60,34 @@ const testingPitfalls = [
   },
 ];
 
+const defenseStrategies = [
+  {
+    strategy: "Assertion Strengthening",
+    description: "Use `assert`, `require`, `expectRevert` with specific errors.",
+  },
+  {
+    strategy: "Role Mocking With Control",
+    description: "Carefully simulate roles using `vm.startPrank` with controlled accounts.",
+  },
+  {
+    strategy: "Full Revert Coverage",
+    description: "For every `require`, write a test that confirms revert on failure.",
+  },
+  {
+    strategy: "State Validation After Calls",
+    description: "Always validate `storage` state changes after actions.",
+  },
+  {
+    strategy: "Event Assertions",
+    description: "Validate `emit` logs to ensure code path coverage.",
+  },
+  {
+    strategy: "Fuzz Entry Constraints",
+    description: "Use assumptions in fuzz/unit tests to prevent false positives.",
+  },
+];
+
+
 export default function TestingTypePage() {
   const [contractCode, setContractCode] = useState("");
   const [analysisResult, setAnalysisResult] = useState<ContractTypeTestOutput | null>(null);
@@ -107,7 +135,7 @@ export default function TestingTypePage() {
             Smart Contract Testing Analyzer
           </CardTitle>
           <CardDescription>
-            Enter any smart contract code. Our AI will attempt to identify its type, provide an overview, and suggest general testing approaches, keeping in mind common testing pitfalls.
+            Enter any smart contract code. Our AI will attempt to identify its type, provide an overview, and suggest general testing approaches, keeping in mind common testing pitfalls and defense strategies.
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -182,9 +210,41 @@ export default function TestingTypePage() {
         </AccordionItem>
       </Accordion>
 
+      <Accordion type="single" collapsible className="w-full shadow-md rounded-lg border bg-card text-card-foreground">
+        <AccordionItem value="defense-strategies">
+          <AccordionTrigger className="px-6 py-4 text-xl hover:no-underline">
+            <div className="flex items-center">
+              <ShieldCheck className="mr-3 h-6 w-6 text-muted-foreground" />
+              Defense Strategies for Robust Testing
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-6 pb-6">
+            <CardDescription className="mb-4">
+              Employ these strategies to build more resilient and effective smart contract tests.
+            </CardDescription>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-[250px]">Defense Strategy</TableHead>
+                  <TableHead>Description</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {defenseStrategies.map((strategy) => (
+                  <TableRow key={strategy.strategy}>
+                    <TableCell className="font-medium">{strategy.strategy}</TableCell>
+                    <TableCell>{strategy.description}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+
 
       {analysisResult && (
-        <Card className="shadow-lg">
+        <Card className="shadow-lg mt-8">
           <CardHeader>
             <CardTitle className="text-2xl flex items-center">
               <ListTree className="mr-3 h-7 w-7 text-primary" />
@@ -250,3 +310,5 @@ export default function TestingTypePage() {
     </div>
   );
 }
+
+    
