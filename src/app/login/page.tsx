@@ -17,9 +17,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
-import { UserPlus, Loader2, AlertCircle, KeyRound, UserCircle2, LogIn, CheckCircle } from "lucide-react"; // Added CheckCircle
-import { registerUser, type RegisterState } from "./actions";
-
+import { LogIn, Loader2, AlertCircle, KeyRound, UserCircle2, UserPlus } from "lucide-react";
+import { loginUser, type LoginState } from "./actions";
+// import { useRouter } from 'next/navigation'; // Uncomment if implementing redirect
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -32,63 +32,61 @@ function SubmitButton() {
       {pending ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-          Creating account...
+          Signing in...
         </>
       ) : (
         <>
-          <UserPlus className="mr-2 h-4 w-4" />
-          Register
+          <LogIn className="mr-2 h-4 w-4" />
+          Sign In
         </>
       )}
     </Button>
   );
 }
 
-
-export default function RegisterPage() {
+export default function LoginPage() {
   const { toast } = useToast();
-  const initialState: RegisterState = { message: null, error: null, success: false };
-  const [formState, formAction] = useFormState(registerUser, initialState);
+  // const router = useRouter(); // Uncomment if implementing redirect
+  const initialState: LoginState = { message: null, error: null, success: false, redirectTo: null };
+  const [formState, formAction] = useFormState(loginUser, initialState);
 
-  const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
 
   useEffect(() => {
     if (formState?.success && formState.message) {
       toast({
-        title: "Registration Successful!",
+        title: "Login Successful!",
         description: formState.message,
         variant: "default",
       });
       // Clear form fields on success
-      setDisplayName("");
       setEmail("");
       setPassword("");
-      setConfirmPassword("");
-      // Optionally redirect or reset form state further
+      // if (formState.redirectTo) {
+      //   router.push(formState.redirectTo);
+      // }
     } else if (formState?.error) {
       toast({
-        title: "Registration Error",
+        title: "Login Error",
         description: formState.error,
         variant: "destructive",
       });
     }
-  }, [formState, toast]);
+  }, [formState, toast /*, router */]); // Add router if using redirect
 
   return (
     <div className="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <UserPlus className="mx-auto h-12 w-auto text-primary" />
+        <LogIn className="mx-auto h-12 w-auto text-primary" />
         <h2 className="mt-6 text-center text-3xl font-bold tracking-tight text-foreground">
-          Create your BlockArmor account
+          Sign in to BlockArmor
         </h2>
         <p className="mt-2 text-center text-sm text-muted-foreground">
           Or{" "}
-          <Link href="/login" legacyBehavior>
+          <Link href="/register" legacyBehavior>
             <a className="font-medium text-primary hover:text-primary/90">
-              sign in if you already have an account
+              create an account if you don&apos;t have one
             </a>
           </Link>
         </p>
@@ -98,30 +96,15 @@ export default function RegisterPage() {
         <Card className="shadow-xl">
           <form action={formAction}>
             <CardHeader>
-              <CardTitle className="text-xl">Register</CardTitle>
+              <CardTitle className="text-xl">Sign In</CardTitle>
               <CardDescription>
-                Fill in the details below to create your account.
+                Enter your credentials to access your account.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="displayName">
-                  <UserCircle2 className="inline-block mr-2 h-4 w-4 relative -top-px" />
-                  Display Name
-                </Label>
-                <Input
-                  id="displayName"
-                  name="displayName"
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="John Doe"
-                  required
-                />
-              </div>
-              <div className="space-y-2">
                 <Label htmlFor="email">
-                  <UserPlus className="inline-block mr-2 h-4 w-4 relative -top-px" />
+                  <UserCircle2 className="inline-block mr-2 h-4 w-4 relative -top-px" />
                   Email address
                 </Label>
                 <Input
@@ -148,24 +131,7 @@ export default function RegisterPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  autoComplete="new-password"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">
-                  <KeyRound className="inline-block mr-2 h-4 w-4 relative -top-px" />
-                  Confirm Password
-                </Label>
-                <Input
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
+                  autoComplete="current-password"
                   required
                 />
               </div>
@@ -173,14 +139,14 @@ export default function RegisterPage() {
               {formState?.error && !formState.success && (
                 <Alert variant="destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle>Registration Error</AlertTitle>
+                  <AlertTitle>Login Error</AlertTitle>
                   <AlertDescription>{formState.error}</AlertDescription>
                 </Alert>
               )}
                {formState?.success && formState.message && (
                 <Alert variant="default" className="border-green-300 text-green-700 dark:bg-green-900/20 dark:text-green-300 dark:border-green-700">
-                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />
-                  <AlertTitle className="text-green-700 dark:text-green-300">Registration Successful</AlertTitle>
+                  <LogIn className="h-5 w-5 text-green-600 dark:text-green-400" />
+                  <AlertTitle className="text-green-700 dark:text-green-300">Login Successful</AlertTitle>
                   <AlertDescription>
                     {formState.message}
                   </AlertDescription>
@@ -189,7 +155,7 @@ export default function RegisterPage() {
             </CardContent>
             <CardFooter className="flex flex-col items-stretch space-y-4">
               <SubmitButton />
-                 <div className="relative">
+              <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <span className="w-full border-t" />
                 </div>
@@ -199,19 +165,16 @@ export default function RegisterPage() {
                   </span>
                 </div>
               </div>
-               <Button variant="outline" asChild>
-                <Link href="/login">
-                  <LogIn className="mr-2 h-4 w-4" /> Sign in to existing account
+              <Button variant="outline" asChild>
+                <Link href="/register">
+                  <UserPlus className="mr-2 h-4 w-4" /> Create new account
                 </Link>
               </Button>
             </CardFooter>
           </form>
         </Card>
          <p className="mt-8 text-center text-xs text-muted-foreground">
-            By creating an account, you agree to our (non-existent)
-            <Link href="/terms" legacyBehavior><a className="underline hover:text-primary px-1">Terms of Service</a></Link>
-            and
-            <Link href="/privacy" legacyBehavior><a className="underline hover:text-primary pl-1">Privacy Policy</a></Link>.
+            <Link href="/dashboard" legacyBehavior><a className="underline hover:text-primary px-1">Return to Dashboard</a></Link>
           </p>
       </div>
     </div>
